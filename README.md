@@ -14,6 +14,7 @@ float64 kenaruzunluk
 ```
 ## Arayüz
 -PyQt5
+![arayüz çıktısı][/home/taylan/Pictures/interface.py]
 
 ## Çalıştırma
 - publisher.py dosyasını çalıştırarak eşkaner üçgenimizin uzunluğunu giriyoruz.
