@@ -12,6 +12,9 @@ float64 angle
 ```python
 float64 kenaruzunluk
 ```
+## Arayüz
+-PyQt5
+
 ## Çalıştırma
 - publisher.py dosyasını çalıştırarak eşkaner üçgenimizin uzunluğunu giriyoruz.
 - ucgen_cizdirme_ui_3.py dosyasını çalıştırıyoruz.
