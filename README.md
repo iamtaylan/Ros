@@ -12,3 +12,7 @@ float64 angle
 ```python
 float64 kenaruzunluk
 ```
+## Çalıştırma
+- publisher.py dosyasını çalıştırarak eşkaner üçgenimizin uzunluğunu giriyoruz.
+- ucgen_cizdirme_ui_3.py dosyasını çalıştırıyoruz.
+- karşımıza çıkan arayüzde başlat butonuna basıyoruz ve turtlebot3 eşkenar üçgen çizmeye başlıyor
