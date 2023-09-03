@@ -4,10 +4,11 @@ ROS kullanarak turtlebot3 ile bir eşkenar üçgen çizdirmek ve kendimize özel
 
 ## Msg Dosyaları
 - Angle.msg
-  '''python
-  float64 angle
-  '''
+```python
+float64 angle
+
+```
 - Length.msg
-  '''python
-  float64 kenaruzunluk
-  '''
+```python
+float64 kenaruzunluk
+```
