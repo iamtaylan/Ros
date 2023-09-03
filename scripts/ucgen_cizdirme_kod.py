@@ -4,16 +4,18 @@
 import rospy
 from geometry_msgs.msg import Twist
 from math import radians
-from ucgen_cizdirme.msg import Length
+from ucgen_cizdirme.msg import Length, Angle
+import publisher
+
 
 class Triangle():
     def __init__(self):
         rospy.init_node('draw_triangle_node', anonymous=True)
         vel_publisher = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
         rospy.Subscriber("kenar_topic", Length, self.lengthFunction)
-        rate = rospy.Rate(10)  
+        rospy.Subscriber("aci_topic", Angle, self.angleFunction)
 
-        
+        rate = rospy.Rate(10)  
 
         vel_msg = Twist()
 
@@ -52,6 +54,10 @@ class Triangle():
     def lengthFunction(self, mesaj):
         rospy.loginfo("Triange length: %s"%mesaj.kenaruzunluk)
         self.kenar_uzunlugu = mesaj.kenaruzunluk
+
+    def angleFunction(self, mesaj):
+        rospy.loginfo("Angle: %s"%mesaj.angle)
+        self.angle = mesaj.angle
 
 
 

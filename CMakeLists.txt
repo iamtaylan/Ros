@@ -46,6 +46,7 @@ find_package(catkin REQUIRED message_generation)
 add_message_files(
    FILES
    Length.msg
+   Angle.msg
  )
 
 ## Generate services in the 'srv' folder
