@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import rospy
-from ucgen_cizdirme.msg import Laser, Rotate
+from ucgen_cizdirme.msg import Laser, Rotate, Vector3
 from sensor_msgs.msg import LaserScan
 
 class LazerVerisi():
@@ -10,7 +10,7 @@ class LazerVerisi():
         rospy.init_node("lidar")
         self.pub = rospy.Publisher("cmd_vel",Rotate,queue_size = 10)
         rospy.Subscriber("scan",LaserScan,self.lazerCallback)
-        rospy.Subscriber("hiz_topic",Rotate,self.VelCallBack)
+        rospy.Subscriber("hiz_topic",Vector3 ,self.VelCallBack)
         self.hiz_mesaji = Rotate()
 
         self.hiz_mesaji.linear.x = 0.0
@@ -28,7 +28,7 @@ class LazerVerisi():
         min_sag = min(sag)
         min_arka = min(arka)
         print(min_on,min_sol,min_sag,min_arka)
-        if min_on < 1.0:
+        if min_on < 3.0:
             self.hiz_mesaji.linear.x = 0.0
             self.pub.publish(self.hiz_mesaji)
         else:
@@ -37,8 +37,8 @@ class LazerVerisi():
                     
 
     def VelCallBack(self, hiz_mesaj):
-        rospy.loginfo("Hiz: %s" %hiz_mesaj.linear)
-        self.hiz_mesaji.linear.x = hiz_mesaj.linear
+        rospy.loginfo("Hiz: %s" %hiz_mesaj.x)
+        self.hiz_mesaji.linear.x = hiz_mesaj.x
 
 
 nesne = LazerVerisi()
