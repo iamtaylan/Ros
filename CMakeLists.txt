@@ -7,7 +7,13 @@ project(ucgen_cizdirme)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED message_generation)
+find_package(catkin REQUIRED 
+  roscpp
+  rospy
+  message_generation
+  actionlib_msgs
+  geometry_msgs
+  )
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -44,9 +50,13 @@ find_package(catkin REQUIRED message_generation)
 
 ## Generate messages in the 'msg' folder
 add_message_files(
-   FILES
-   Length.msg
-   Angle.msg
+  FILES
+  Length.msg
+  Angle.msg
+  Vector3.msg
+  Laser.msg
+  Rotate.msg
+ 
  )
 
 ## Generate services in the 'srv' folder
@@ -64,10 +74,7 @@ add_message_files(
 # )
 
 ## Generate added messages and services with any dependencies listed here
-generate_messages()
-#   DEPENDENCIES
-#   std_msgs  # Or other packages containing msgs
-# )
+ generate_messages(DEPENDENCIES actionlib_msgs std_msgs)
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
