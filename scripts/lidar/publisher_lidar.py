@@ -15,11 +15,14 @@ rate = rospy.Rate(1) # 1 hz
 # istediğimiz aralıkta girene kadar while döndürdük
 i = 1
 while i:
-    hiz = float(input("hiz değeri giriniz(örn: 2.0)(maksimum 5.0 giriniz): \n"))
-    if hiz <= 5.0:
+    hiz = float(input("hiz değeri giriniz(örn: 0.5)(maksimum 1.0 giriniz): \n"))
+    if 0.0 < hiz <= 1.0:
         i = 0
+    elif hiz == 0:
+        print("Lütfen 0'dan büyük bir sayı giriniz.")
+        i = 1
     else:
-        print("Lütfen 0'dan büyük ve 5.0'dan küçük bir sayı giriniz: ")
+        print("Lütfen 0'dan büyük ve 1.0'dan küçük bir sayı giriniz. ")
         i = 1
 
 
