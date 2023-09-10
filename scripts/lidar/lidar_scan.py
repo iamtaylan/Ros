@@ -41,4 +41,4 @@ class LazerVerisi():
         self.hiz_mesaji.linear.x = hiz_mesaj.x
 
 
-nesne = LazerVerisi()
+LazerVerisi()
