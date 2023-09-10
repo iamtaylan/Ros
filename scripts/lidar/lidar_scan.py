@@ -28,7 +28,7 @@ class LazerVerisi():
         min_sag = min(sag)
         min_arka = min(arka)
         print(min_on,min_sol,min_sag,min_arka)
-        if min_on < 3.0:
+        if min_on < (self.hiz_mesaji.linear.x + 0.5):
             self.hiz_mesaji.linear.x = 0.0
             self.pub.publish(self.hiz_mesaji)
         else:
