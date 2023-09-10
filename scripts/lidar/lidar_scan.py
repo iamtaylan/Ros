@@ -2,8 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import rospy
-from ucgen_cizdirme.msg import Laser, Rotate, Vector3
-from sensor_msgs.msg import LaserScan
+from ucgen_cizdirme.msg import Laser, Rotate, Vector3, Laser
 
 class LazerVerisi():
     def __init__(self):
@@ -11,7 +10,7 @@ class LazerVerisi():
         #düğümlerimizi oluşturduk
         rospy.init_node("lidar")
         self.pub = rospy.Publisher("cmd_vel",Rotate,queue_size = 10)
-        rospy.Subscriber("scan",LaserScan,self.lazerCallback)
+        rospy.Subscriber("scan",Laser,self.lazerCallback)
         rospy.Subscriber("hiz_topic",Vector3 ,self.VelCallBack)
         self.hiz_mesaji = Rotate()
 

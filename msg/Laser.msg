@@ -1,13 +1,10 @@
 std_msgs/Header header
-  uint32 seq
-  time stamp
-  string frame_id
-float64 angle_min
-float64 angle_max
-float64 angle_increment
-float64 time_increment
-float64 scan_time
-float64 range_min
-float64 range_max
-float64[] ranges
-float64[] intensities
+float32 angle_min
+float32 angle_max
+float32 angle_increment
+float32 time_increment
+float32 scan_time
+float32 range_min
+float32 range_max
+float32[] ranges
+float32[] intensities
