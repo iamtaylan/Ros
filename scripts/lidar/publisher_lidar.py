@@ -7,7 +7,7 @@ from ucgen_cizdirme.msg import Rotate,Vector3
 
 # Hız mesajımızı yayınlicağımız düğümü oluşturduk.
 rospy.init_node("publisher_node",anonymous=True)
-pub = rospy.Publisher("hiz_topic",Rotate,queue_size=10)
+pub = rospy.Publisher("hiz_topic",Vector3,queue_size=10)
 
 rate = rospy.Rate(1) # 1 hz
 
@@ -26,6 +26,6 @@ while i:
 
 while not rospy.is_shutdown():
     rospy.loginfo(hiz)
-    pub.publish(hiz,0)
+    pub.publish(hiz, 0, 0)
     rate.sleep()
 
