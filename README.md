@@ -63,10 +63,46 @@ Vector3 angular
 ### Eksikler
 - Planlanan Arayüz karşılaşılan hatalar yüzünden tamamlanamadı(güncellicek..) 
 
-
-
-
-
+## Nesne Tespit Uygulaması
+Kameradan gelen verileri işleyerek nesne tespit etmek, tespit edilen nesnelerin ağırlık merkezini bulmak ve nesneye doğru modeli hareket ettirmek
+### Msg Dosyaları
+- Laser.msg
+```python
+std_msgs/Header header
+float32 angle_min
+float32 angle_max
+float32 angle_increment
+float32 time_increment
+float32 scan_time
+float32 range_min
+float32 range_max
+float32[] ranges
+float32[] intensities
+```
+- Vector3.msg
+```python
+float64 x
+float64 y
+float64 z
+```
+- Rotate.msg
+```python
+Vector3 linear
+Vector3 angular
+```
+- KameraVeri.msg
+```python
+std_msgs/Header header
+uint32 height
+uint32 width
+string encoding
+uint8 is_bigendian
+uint32 step
+uint8[] data
+```
+###  Çalıştırma
+- İlk olarak publisher_kamera.py dosyamızı çalıştırıyoruz ve robotumuzun ilerlemek istediği hızı belirliyoruz
+- İkinci olarak kameraUi_3.py dosyamızı çalıştırıyoruz ve görev gerçekleştiriliyor
 
 
 
