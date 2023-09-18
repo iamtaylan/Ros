@@ -1,3 +1,8 @@
+
+########################################################
+#   TurtleBot3 kamera görüntüsünü PyQt5 ile gösterme   #
+########################################################
+
 import sys
 import cv2
 from PyQt5.QtCore import Qt, QTimer

@@ -56,7 +56,7 @@ add_message_files(
   Vector3.msg
   Laser.msg
   Rotate.msg
- 
+  KameraVeri.msg
  )
 
 ## Generate services in the 'srv' folder

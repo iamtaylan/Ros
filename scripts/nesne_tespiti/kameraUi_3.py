@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 # Form implementation generated from reading ui file 'kameraVeri.ui'
@@ -15,7 +16,10 @@ from PyQt5.QtQuickWidgets import *
 from PyQt5.QtCore import *
 import sys
 import cv2
-
+import numpy as np
+import rospy
+from ucgen_cizdirme.msg import KameraVeri, Rotate, Vector3, Laser
+from cv_bridge import CvBridge
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -309,41 +313,138 @@ class Ui_MainWindow(object):
         self.indirButon.clicked.connect(self.minimize)
         self.bkButon.clicked.connect(self.maximize)
 
+        """
         self.timer = QTimer(MainWindow)
-        self.timer.timeout.connect(self.update_frame)
-        self.timer.start(100)  # Görüntüyü güncellemek için bir zamanlayıcı başlatın (örneğin, her 100 milisaniyede bir)
+        self.timer.timeout.connect(self.cameraCallback)
+        self.timer.start(1)  # Görüntüyü güncellemek için bir zamanlayıcı başlattık her 1 milisaniyede bir güncellenicek
+        """
 
         #Pencere Boyutlandırma
         QSizeGrip(self.frame)
+
+
+        # Düğümüzü oluşturduk ve konularımıza Sub ve Pub olduk
+        rospy.init_node("nesne_tespiti") 
+        self.pub=rospy.Publisher("cmd_vel",Rotate,queue_size=10)
+        rospy.Subscriber("camera/rgb/image_raw",KameraVeri ,self.cameraCallback)
+        rospy.Subscriber("scan",Laser,callback=self.laserCallback)
+        rospy.Subscriber("hiz_topic",Vector3 ,self.VelCallBack)
+
+        self.hiz_mesaji=Rotate()
+        self.cv_bridge=CvBridge()
         
+        self.hiz_mesaji.linear.x = 0.0
+        self.min_on=0
+        rospy.spin()
 
-    def update_frame(self):
-        # Kameradan anlık görüntü alın
-        cap = cv2.VideoCapture(0)  # 0, birinci kamera demektir. Birden fazla kamera varsa ayarlarına göre değiştirin.
-        ret, frame = cap.read()
+    # Kameradan görüntü alma, görüntüyü işleme ve robotu hareket ettirme gibi görevleri yaptığımız fonksiyon
+    def cameraCallback(self, data):
 
-        if ret:
-                # Yeni boyutu belirleyin (örneğin, 60x60 piksel)
-                new_height = 330
-                new_width = 330
+        image=self.cv_bridge.imgmsg_to_cv2(data,"bgr8")
 
-                # OpenCV görüntüsünü yeni boyuta yeniden boyutlandırın
-                resized_frame = cv2.resize(frame, (new_width, new_height))
+        gray=cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
+        lower_gray=np.array([30],dtype="uint8")
+        upper_gray=np.array([150],dtype="uint8")
+        mask=cv2.inRange(gray,lower_gray,upper_gray)
+        self.current_image = image
 
-                # Yeniden boyutlandırılmış görüntüyü QImage'e dönüştürün
-                height, width, channel = resized_frame.shape
-                bytes_per_line = 3 * width
-                q_img = QImage(resized_frame.data, width, height, bytes_per_line, QImage.Format_RGB888)
+        new_height = 330
+        new_width = 330
 
-                # QLabel içinde görüntüyü gösterin
-                self.Kamera1.setPixmap(QPixmap.fromImage(q_img))
-                self.Kamera2.setPixmap(QPixmap.fromImage(q_img))
-                self.Kamera3.setPixmap(QPixmap.fromImage(q_img))
-        else:
-                self.Kamera1.setText("Kamera bağlantısı yok")
+        # Görüntüyü yeniden boyutlandırdık
+        resized_image = cv2.resize(image, (new_width, new_height))
+        resized_image2 = cv2.resize(gray, (new_width, new_height))
+        resized_image3 = cv2.resize(mask, (new_width, new_height))
+
+        self.camera = KameraVeri()
+        self.camera_publisher = rospy.Publisher("qt", KameraVeri, queue_size=100)
+
+        # self.combined_image = cv2.vconcat([resized_image, resized_image2, resized_image3])
+
+        self.camera.height = 330
+        self.camera.width = 990
+        self.camera.data = resized_image3
+
+        self.camera_publisher.publish(self.camera)
+
+        # Yeniden boyutlandırılmış görüntüyü QImage'e dönüştürdük
+        height, width, channel = resized_image.shape
+        bytes_per_line = 3 * width
+        q_img = QImage(resized_image.data, width, height, bytes_per_line, QImage.Format_RGB888)
+
+        height, width = resized_image2.shape
+        bytes_per_line = 3 * width
+        q_img2 = QImage(resized_image2.data, width, height, bytes_per_line, QImage.Format_RGB888)
+
+        height, width = resized_image3.shape
+        bytes_per_line = 3 * width
+        q_img3 = QImage(resized_image3.data, width, height, bytes_per_line, QImage.Format_RGB888)
+
+        # QLabel içerisine görüntüleri aktardık
+        self.Kamera1.setPixmap(QPixmap.fromImage(q_img))
+        self.Kamera2.setPixmap(QPixmap.fromImage(q_img2))
+        self.Kamera3.setPixmap(QPixmap.fromImage(q_img3))
+
+        h,w,c=image.shape
+        M=cv2.moments(mask)
+        
+        # Eğer karşısında bir nesne varsa kullanıcıdan aldığımız hızla nesneye doğru yaklaşıcak
+        if M['m00']>0:
+                M=cv2.moments(mask)
+                x=int(M['m10']/M['m00'])
+                y=int(M['m01']/M['m00'])
+                
+                sapma=x-w/2
+
+                if self.min_on>1.0:
+                        self.hiz_mesaji.linear.x=0.0
+                        self.hiz_mesaji.angular.z=-sapma/100
+                        self.pub.publish(self.hiz_mesaji)
+
+                elif self.min_on<1.0:
+                        self.hiz_mesaji.linear.x=0.0
+                        self.hiz_mesaji.angular.z=0.0
+                        self.pub.publish(self.hiz_mesaji)
+                
+                # Ekrana bir yeşil nokta çizdik bu şeklimizin ağırlık merkezinde oluşucak
+                cv2.circle(image,(x,y),5,(0,255,0),-1)
+
+        # Eğer karşısında bir nesne yoksa 0.5lik bir hızla etrafında dönücek                
+        elif M['m00']==0 or M['m00']<0:
+                self.hiz_mesaji.linear.x=0.0
+                self.hiz_mesaji.linear.z=0.0
+                self.hiz_mesaji.angular.z=0.5
+                self.pub.publish(self.hiz_mesaji)
+        
+        cv2.imshow("image",image)
+        cv2.imshow("gray_image",mask)
 
 
+        cv2.waitKey(1)
 
+    # Lidardan verilerimizi aldığımız fonksiyon
+    def laserCallback(self,request):
+
+        # Lidar sensörümüzün çalışma aralıklarını belirledik
+        sol_on = list(request.ranges[0:9])
+        sag_on = list(request.ranges[350:359])
+        on = sol_on + sag_on
+        sol = list(request.ranges[80:100])
+        sag = list(request.ranges[260:280])
+        arka = list(request.ranges[170:190])
+
+        # Sensör verileini yazdırdık.
+        min_on = min(on)
+        min_sol = min(sol)
+        min_sag = min(sag)
+        min_arka = min(arka)
+        print(min_on,min_sol,min_sag,min_arka)
+        
+    # Publisherımızdan gelen hız mesajını aldığımız fonksiyon.
+    def VelCallBack(self, hiz_mesaj):
+        rospy.loginfo("Hiz: %s" %hiz_mesaj.x)
+        self.hiz_mesaji.linear.x = hiz_mesaj.x
+        
 
     #Kapatma fonksiyonu
     def close(self):
@@ -351,14 +452,14 @@ class Ui_MainWindow(object):
 
     #Küçültme fonksiyonu
     def minimize(self):
-        self.showMinimized()
+        MainWindow.showMinimized()
 
     #Büyültme fonksiyonu
     def maximize(self):
-        if self.isMaximized():
-            self.showNormal()
+        if MainWindow.isMaximized():
+            MainWindow.showNormal()
         else:
-            self.showMaximized()
+            MainWindow.isMaximized()
 
     #Pencereyi hareket ettirme fonksiyonları
     def mousePressEvent(self, event):
