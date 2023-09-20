@@ -64,6 +64,7 @@ Vector3 angular
 - Planlanan Arayüz karşılaşılan hatalar yüzünden tamamlanamadı(güncellicek..) 
 
 ## Nesne Tespit Uygulaması
+### Proje Tanımı
 Kameradan gelen verileri işleyerek nesne tespit etmek, tespit edilen nesnelerin ağırlık merkezini bulmak ve nesneye doğru modeli hareket ettirmek
 ### Msg Dosyaları
 - Laser.msg
