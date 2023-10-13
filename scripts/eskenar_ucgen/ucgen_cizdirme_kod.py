@@ -5,7 +5,7 @@ import rospy
 from geometry_msgs.msg import Twist
 from math import radians
 from ucgen_cizdirme.msg import Length, Angle
-import publisher
+import scripts.eskenar_ucgen.publisher as publisher
 
 
 class Triangle():

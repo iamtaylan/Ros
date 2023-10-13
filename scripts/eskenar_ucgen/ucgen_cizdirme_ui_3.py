@@ -5,7 +5,7 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 import sys
-from ucgen_cizdirme_ui_3 import * 
+from scripts.eskenar_ucgen.ucgen_cizdirme_ui_3 import * 
 import rospy
 from geometry_msgs.msg import Twist
 from math import radians
